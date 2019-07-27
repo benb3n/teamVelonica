@@ -156,18 +156,14 @@ public class AccessDao implements IAccessDao {
     // Return the list of accesses for a given user ID
     @Override
     public List<Access> retrieveAccessByUserID(int userID) {
-        List<Access> accesses = new ArrayList<>();
-        try {
-            String query = "SELECT * FROM Accesses WHERE  UserID = ?";
-            accesses =
-                    retriever.retrievePreparedStatement(query, Collections.singletonList(userID))
-                            .stream()
-                            .map(o -> (Access) o)
-                            .collect(Collectors.toList());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return accesses;
+
+        String query = "SELECT * FROM Accesses WHERE  UserID = ?";
+
+        return
+            retriever.retrievePreparedStatement(query, Collections.singletonList(userID))
+                .stream()
+                .map(o -> (Access) o)
+                .collect(Collectors.toList());
     }
 
     @Override

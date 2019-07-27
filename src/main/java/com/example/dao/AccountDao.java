@@ -170,7 +170,7 @@ public class AccountDao implements IAccountDao {
     }
 
     public Account getAccountByID(String username) throws SQLException {
-        String query = "SELECT * FROM Accounts WHERE Username = " + username;
+        String query = "SELECT * FROM Accounts WHERE Username = \'" + username + "\'";
         con = DriverManager.getConnection(url, username, password);
         stmt = con.createStatement();
         rs = stmt.executeQuery(query);
@@ -316,5 +316,36 @@ public class AccountDao implements IAccountDao {
 
     public String closeConnection() {
         return "Close Connection - Success";
+    }
+
+    public Account getAccountByID(int userID) throws SQLException {
+        String query = "SELECT * FROM Accounts WHERE UserID = " + userID;
+        Account account = null;
+
+        con = DriverManager.getConnection(url, username, password);
+        stmt = con.createStatement();
+        rs = stmt.executeQuery(query);
+
+        while(rs.next()) {
+            int id = rs.getInt("UserID");
+            String userName = rs.getString("Username");
+            String password = rs.getString("Password");
+            String firstName = rs.getString("FirstName");
+            String lastName = rs.getString("LastName");
+            String email = rs.getString("Email");
+            String gender = rs.getString("Gender");
+            String birthDate = rs.getString("BirthDate");
+            String nationality = rs.getString("Nationality");
+            String interest = rs.getString("Interest");
+            String region = rs.getString("Region");
+
+            account = new Account(id,userName,password,firstName,lastName,email,gender,birthDate,nationality,interest,region);
+        }
+
+        rs.close();
+        stmt.close();
+        con.close();
+
+        return account;
     }
 }
