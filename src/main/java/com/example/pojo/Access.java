@@ -1,14 +1,15 @@
-package com.example.demo;
+package com.example.pojo;
 
+import com.example.helpers.AccessType;
 import lombok.Data;
 
 @Data
 public class Access {
-    private final String userID;
-    private final String access;
+    private final int userID;
+    private final AccessType access;
     private final String organisationID;
 
-    public Access(String userID, String access, String organisationID) {
+    public Access(int userID, AccessType access, String organisationID) {
         this.userID = userID;
         this.access = access;
         this.organisationID = organisationID;
