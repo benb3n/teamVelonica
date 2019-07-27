@@ -170,6 +170,16 @@ public class AccessDao implements IAccessDao {
         return accesses;
     }
 
+    @Override
+    public boolean createAccess(int userID) {
+        return createAccess(new Access(userID, AccessType.VOLUNTEER, null));
+    }
+
+    @Override
+    public boolean createAccess(Access access) {
+        return retriever.insertStatement(access);
+    }
+
     private void buildParameterisedQuery(List<Object> parameters, int countInQuery, PreparedStatement pstmt) throws SQLException {
         for (int i = 0; i < countInQuery; i++) {
             if (parameters.get(i) instanceof String)

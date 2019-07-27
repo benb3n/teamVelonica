@@ -10,4 +10,8 @@ public interface IAccessDao {
     List<Access> getAllAccesses();
 
     List<Access> retrieveAccessByUserID(int userID);
+
+    boolean createAccess(int userID);
+
+    boolean createAccess(Access access);
 }
