@@ -86,9 +86,11 @@ public class AccessDao implements IAccessDao {
                 Statement stmt = con.createStatement();
                 int count = stmt.executeUpdate(query);
 
+                if (count != 0)
+                    return true;
+
                 stmt.close();
                 con.close();
-
             } catch (ClassNotFoundException | SQLException e) {
                 e.printStackTrace();
             }
