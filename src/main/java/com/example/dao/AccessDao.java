@@ -60,7 +60,7 @@ public class AccessDao implements IAccessDao {
                 buildParameterisedQuery(parameters, countInQuery, pstmt);
 
                 ResultSet rs = pstmt.executeQuery();
-                parseResultSet(rs);
+                accesses = parseResultSet(rs);
 
                 rs.close();
                 pstmt.close();
