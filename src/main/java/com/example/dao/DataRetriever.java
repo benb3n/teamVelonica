@@ -35,5 +35,9 @@ abstract class DataRetriever {
 
     abstract List<Object> retrieveStatement(String query);
     abstract List<Object> retrievePreparedStatement(String query, List<Object> parameters);
+    abstract boolean executeStatement(String query);
     abstract List<Object> parseResultSet(ResultSet rs) throws SQLException;
+    abstract boolean insertStatement(Object object);
+    abstract boolean updateStatement(String query);
+    abstract boolean deleteStatement(String query);
 }

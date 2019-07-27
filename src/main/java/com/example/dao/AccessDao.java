@@ -4,12 +4,15 @@ import com.example.helpers.AccessType;
 import com.example.helpers.ConstantHelper;
 import com.example.helpers.Field;
 import com.example.pojo.Access;
+import com.example.pojo.Account;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.example.helpers.ConstantHelper.COMMA_SPACE;
 
 
 /**
@@ -76,6 +79,23 @@ public class AccessDao implements IAccessDao {
         }
 
         @Override
+        boolean executeStatement(String query) {
+            Connection con = null;
+            try {
+                con = retriever.openConnection();
+                Statement stmt = con.createStatement();
+                int count = stmt.executeUpdate(query);
+
+                stmt.close();
+                con.close();
+
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
         List<Object> parseResultSet(ResultSet rs) throws SQLException {
             List<Object> accesses = new ArrayList<>();
             while (rs.next()) {
@@ -90,6 +110,36 @@ public class AccessDao implements IAccessDao {
             }
 
             return accesses;
+        }
+
+        @Override
+        boolean insertStatement(Object object) {
+            if (object instanceof Access) {
+                Access access = (Access) object;
+
+                StringBuilder query = new StringBuilder();
+                query.append("INSERT INTO Access (UserID, Access, OrganisationID) VALUES (");
+                query.append(access.getUserID());
+                query.append(COMMA_SPACE);
+                query.append(access.getAccess());
+                query.append(COMMA_SPACE);
+                query.append(access.getOrganisationID());
+                query.append(")");
+
+                System.out.println("Constructed: " + query);
+                return this.executeStatement(query.toString());
+            }
+            return false;
+        }
+
+        @Override
+        boolean updateStatement(String query) {
+            return false;
+        }
+
+        @Override
+        boolean deleteStatement(String query) {
+            return false;
         }
     };
 
