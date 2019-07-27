@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.example.demo;
+package com.example.pojo;
 
 /**
  *
@@ -14,6 +14,7 @@ public class Organisation {
     private String OrganisationName;
     private String OrganisationID;
     
+    public Organisation(){}
     
     public Organisation(String OrganisationName, String OrganisationID){
         this.OrganisationName = OrganisationName;
