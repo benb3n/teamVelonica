@@ -80,7 +80,7 @@ public class AccessDao implements IAccessDao {
 
         @Override
         boolean executeStatement(String query) {
-            Connection con = null;
+            Connection con;
             try {
                 con = retriever.openConnection();
                 Statement stmt = con.createStatement();
