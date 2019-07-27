@@ -1,6 +1,6 @@
 package com.example.dao;
 
-import com.example.pojo.Organization;
+import com.example.pojo.Organisation;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -14,7 +14,7 @@ import java.util.List;
  * Created by luqman on 27/7/2019.
  */
 @Repository
-public class OrganizationDao {
+public class OrganisationDao implements IOrganisationDAO {
     String username;
     String password;
     String url;
@@ -22,21 +22,21 @@ public class OrganizationDao {
     Connection con;
     Statement stmt;
 
-    public OrganizationDao() {
+    public OrganisationDao() {
         username ="CitiAdmin";
         password = "citihack2019";
         url = "jdbc:mysql://citihack2019.cwop36kfff9j.ap-southeast-1.rds.amazonaws.com:3306/innodb";
     }
 
-    public OrganizationDao(String username,String password,String url) {
+    public OrganisationDao(String username,String password,String url) {
         this.username=username;
         this.password=password;
         this.url=url;
     }
 
     // Return the list of organisers
-    public List<Organization> getAllAccounts() {
-        List<Organization> organizations = new ArrayList<>();
+    public List<Organisation> getAllAccounts() {
+        List<Organisation> organisations = new ArrayList<>();
         String query = "SELECT * FROM Organisers";
         System.out.println("query is "+query);
         System.out.println("url is "+url);
@@ -49,18 +49,18 @@ public class OrganizationDao {
             System.out.println("Running getAllAccounts");
 
             while(rs.next()) {
-                Organization org = new Organization();
+                Organisation org = new Organisation();
                 org.setOrganisationID(rs.getString("OrganiserId"));
                 org.setOrganisationName(rs.getString("OrganiserName"));
 
-                organizations.add(org);
+                organisations.add(org);
             }
 
             rs.close();
             stmt.close();
             con.close();
 
-            return organizations;
+            return organisations;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -68,13 +68,14 @@ public class OrganizationDao {
 
 
         }
-        return organizations;
+        return organisations;
     }
 
     // return specific organizers
-    public Organization getOrganizerByName(String orgName) {
+    @Override
+    public Organisation getOrganiserByName(String orgName) {
         String query = "Select * from Organisers where OrganiserName=\'"+orgName+"\'";
-        Organization org = new Organization();
+        Organisation org = new Organisation();
         try {
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection(url, username, password);
@@ -97,9 +98,9 @@ public class OrganizationDao {
         return org;
     }
 
-    public Organization getOrganizerById(String orgId) {
+    public Organisation getOrganiserById(String orgId) {
         String query = "Select * from Organisers where OrganiserID=\'"+orgId+"\'";
-        Organization org = new Organization();
+        Organisation org = new Organisation();
         try {
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection(url, username, password);
