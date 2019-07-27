@@ -1,13 +1,11 @@
 package com.example.dao;
 
 import com.example.pojo.Account;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.example.helpers.ConstantHelper.COMMA_SPACE;
 
@@ -16,7 +14,7 @@ import static com.example.helpers.ConstantHelper.COMMA_SPACE;
  * Created by luqman on 27/7/2019.
  */
 @Repository
-public class AccountDao {
+public class AccountDao implements IAccountDao {
 
     String username;
     String password;
@@ -86,6 +84,89 @@ public class AccountDao {
 
         }
         return accounts;
+    }
+
+    @Override
+    public boolean updateStatement(Object object) {
+        if (object instanceof Account) {
+            Account account = (Account)object;
+
+            String uname = account.getUserName();
+            String email = account.getEmail();
+            String firstName = account.getFirstName();
+            String lastName = account.getLastName();
+            String pword = account.getPassword();
+
+            String query = "UPDATE Accounts SET Username="+uname+", Email="+email+", FirstName="+firstName+"," +
+                    " LastName="+lastName+", Password="+pword;
+
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                con = DriverManager.getConnection(url, username, password);
+                stmt.executeUpdate(query);
+                stmt.close();
+                con.close();
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteStatement(String email) {
+        String statement = "DELETE FROM Accounts WHERE email="+email;
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection(url, username, password);
+            boolean toReturn=stmt.execute(statement);
+
+            stmt.close();
+            con.close();
+            return toReturn;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public Account getAccount(String username) throws SQLException {
+        String query = "SELECT * FROM Accounts WHERE Username = " + username;
+        con = DriverManager.getConnection(url, username, password);
+        stmt = con.createStatement();
+        rs = stmt.executeQuery(query);
+
+        Account account = null;
+
+        while(rs.next()) {
+            int id = rs.getInt("UserID");
+            String userName = rs.getString("Username");
+            String password = rs.getString("Password");
+            String firstName = rs.getString("FirstName");
+            String lastName = rs.getString("LastName");
+            String email = rs.getString("Email");
+            String gender = rs.getString("Gender");
+            String birthDate = rs.getString("BirthDate");
+            String nationality = rs.getString("Nationality");
+            String interest = rs.getString("Interest");
+            String region = rs.getString("Region");
+
+            account = new Account(id,userName,password,firstName,lastName,email,gender,birthDate,nationality,interest,region);
+            System.out.println("username is "+ userName);
+            System.out.println("username from accounts is "+account.getUserName());
+
+            System.out.println("gender is "+gender);
+            System.out.println("gender from accounts is "+account.getGender());
+        }
+
+        rs.close();
+        stmt.close();
+        con.close();
+
+        return account;
     }
 
     public Account getAccountByID(String username) throws SQLException {

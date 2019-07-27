@@ -12,5 +12,6 @@ public interface IAccountDao {
     List<Account> getAllAccounts();
     int getCountRows();
     Account getAccount(String uname) throws SQLException;
-    boolean insertStatement(Object object);
+    boolean updateStatement(Object object) throws SQLException;
+    boolean deleteStatement(String email) throws SQLException;
 }
