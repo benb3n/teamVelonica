@@ -15,4 +15,6 @@ public interface IRegistrationService {
     Account retrieve(int id);
 
     List<Access> retrieveAllAccesses(int id);
+
+    boolean deleteAccess(int currentUserID, Access access);
 }

@@ -1,5 +1,8 @@
 package com.example.dao;
 
+import com.example.helpers.AccessType;
+import com.example.helpers.Field;
+import com.example.pojo.Access;
 import com.example.pojo.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -8,6 +11,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.helpers.ConstantHelper.COMMA_SPACE;
 
@@ -15,256 +19,162 @@ import static com.example.helpers.ConstantHelper.COMMA_SPACE;
 /**
  * Created by luqman on 27/7/2019.
  */
+
 @Repository
-public class AccountDao {
+public class AccountDao implements IAccountDAO {
+    AccountDao() { }
 
-    String username;
-    String password;
-    String url;
-    ResultSet rs;
-    Connection con;
-    Statement stmt;
+    private final DataRetriever retriever = new DataRetriever() {
+        @Override
+        List<Object> parseResultSet(ResultSet rs) throws SQLException {
+            List<Object> accounts = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt(Field.USER_ID);
+                String userName = rs.getString(Field.USERNAME);
+                String password = rs.getString(Field.PASSWORD);
+                String firstName = rs.getString(Field.FIRST_NAME);
+                String lastName = rs.getString(Field.LAST_NAME);
+                String email = rs.getString(Field.EMAIL);
+                String gender = rs.getString(Field.GENDER);
+                String birthDate = rs.getString(Field.BIRTH_DATE);
+                String nationality = rs.getString(Field.NATIONALITY);
+                String interest = rs.getString(Field.INTEREST);
+                String region = rs.getString(Field.REGION);
 
-    public AccountDao() {
-        username ="CitiAdmin";
-        password = "citihack2019";
-        url = "jdbc:mysql://citihack2019.cwop36kfff9j.ap-southeast-1.rds.amazonaws.com:3306/innodb";
-    }
+                Account account = new Account(id, userName, password, firstName, lastName, email, gender, birthDate, nationality, interest, region);
 
-    public AccountDao(String username,String password,String url) {
-        this.username=username;
-        this.password=password;
-        this.url=url;
-    }
-
-    // Return the list of accounts
-    public List<Account> getAllAccounts() {
-        List<Account> accounts = new ArrayList<>();
-        String query = "SELECT * FROM Accounts";
-        System.out.println("query is "+query);
-        System.out.println("url is "+url);
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(url, username, password);
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
-
-            System.out.println("Running getAllAccounts");
-
-            while(rs.next()) {
-                int id = rs.getInt("UserID");
-                String userName = rs.getString("Username");
-                String password = rs.getString("Password");
-                String firstName = rs.getString("FirstName");
-                String lastName = rs.getString("LastName");
-                String email = rs.getString("Email");
-                String gender = rs.getString("Gender");
-                String birthDate = rs.getString("BirthDate");
-                String nationality = rs.getString("Nationality");
-                String interest = rs.getString("Interest");
-                String region = rs.getString("Region");
-
-                Account account = new Account(id,userName,password,firstName,lastName,email,gender,birthDate,nationality,interest,region);
-                System.out.println("username is "+ userName);
-                System.out.println("username from accounts is "+account.getUserName());
-
-                System.out.println("gender is "+gender);
-                System.out.println("gender from accounts is "+account.getGender());
+                System.out.println("Retrieved access object: " + account.toString());
                 accounts.add(account);
             }
 
+            return accounts;
+        }
+
+        @Override
+        boolean insertStatement(Object object) {
+            if (object instanceof Account) {
+                Account account = (Account) object;
+
+                StringBuilder query = new StringBuilder();
+                query.append("INSERT INTO Accounts\n" +
+                        "(UserID,\n" +
+                        "Username,\n" +
+                        "Password,\n" +
+                        "FirstName,\n" +
+                        "LastName,\n" +
+                        "Email,\n" +
+                        "Gender,\n" +
+                        "BirthDate,\n" +
+                        "Nationality,\n" +
+                        "Interest,\n" +
+                        "Region)\n" +
+                        "VALUES\n" +
+                        "(");
+
+                query.append(account.getUserId());
+                query.append(COMMA_SPACE);
+                query.append(account.getUserName());
+                query.append(COMMA_SPACE);
+                query.append(account.getPassword());
+                query.append(COMMA_SPACE);
+                query.append(account.getFirstName());
+                query.append(COMMA_SPACE);
+                query.append(account.getLastName());
+                query.append(COMMA_SPACE);
+                query.append(account.getEmail());
+                query.append(COMMA_SPACE);
+                query.append(account.getGender());
+                query.append(COMMA_SPACE);
+                query.append(account.getBirthDate());
+                query.append(COMMA_SPACE);
+                query.append(account.getNationality());
+                query.append(COMMA_SPACE);
+                query.append(account.getInterest());
+                query.append(COMMA_SPACE);
+                query.append(account.getRegion());
+                query.append(")");
+
+                System.out.println("Constructed: " + query);
+                return this.executeStatement(query.toString());
+            }
+            return false;
+        }
+
+        @Override
+        boolean updateStatement(String query) {
+            return false;
+        }
+
+        @Override
+        boolean deleteStatement(String query) {
+            return this.executeStatement(query);
+        }
+
+        @Override
+        int retrieveMaxID(String query) throws ClassNotFoundException, SQLException {
+            Connection con = retriever.openConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                return rs.getInt("MaxID");
+            }
+
             rs.close();
             stmt.close();
             con.close();
-
-            return accounts;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println("DONE!");
-
-
+            return 0;
         }
-        return accounts;
+    };
+
+
+
+    // Return the list of accounts
+    @Override
+    public List<Account> getAllAccounts() {
+        String query = "SELECT * FROM Accounts";
+        return retriever.retrieveStatement(query).stream().map(o -> (Account) o).collect(Collectors.toList());
     }
 
-    public Account getAccountByUsername(String username) throws SQLException {
+    @Override
+    public Account getAccountByUsername(String username) {
         String query = "SELECT * FROM Accounts WHERE Username = \'" + username + "\'";
-        con = DriverManager.getConnection(url, username, password);
-        stmt = con.createStatement();
-        rs = stmt.executeQuery(query);
-
-        Account account = null;
-
-        while(rs.next()) {
-            int id = rs.getInt("UserID");
-            String userName = rs.getString("Username");
-            String password = rs.getString("Password");
-            String firstName = rs.getString("FirstName");
-            String lastName = rs.getString("LastName");
-            String email = rs.getString("Email");
-            String gender = rs.getString("Gender");
-            String birthDate = rs.getString("BirthDate");
-            String nationality = rs.getString("Nationality");
-            String interest = rs.getString("Interest");
-            String region = rs.getString("Region");
-
-            account = new Account(id,userName,password,firstName,lastName,email,gender,birthDate,nationality,interest,region);
-            System.out.println("username is "+ userName);
-            System.out.println("username from accounts is "+account.getUserName());
-
-            System.out.println("gender is "+gender);
-            System.out.println("gender from accounts is "+account.getGender());
-        }
-
-        rs.close();
-        stmt.close();
-        con.close();
-
-        return account;
+        return retrieveAccount(query);
     }
 
     // Return the number of rows
-    public int getCountRows() {
-        String query = "SELECT COUNT(*) FROM Accounts";
-        int toReturn=0;
+    @Override
+    public int getCountRows() throws SQLException, ClassNotFoundException {
+        String query = "SELECT MAX(UserID) AS MaxID FROM Accounts";
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(url, username, password);
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
-
-            if (rs != null)
-            {
-                rs.last();    // moves cursor to the last row
-                toReturn = rs.getRow(); // get row id
-            }
-
-            rs.close();
-            stmt.close();
-            con.close();
-
-            return toReturn;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println("DONE!");
-        }
-        return toReturn;
+        return retriever.retrieveMaxID(query);
     }
 
+    @Override
     public boolean loginInfo(String username, String password) {
         String query = "SELECT * FROM Accounts WHERE username=\'"+username+"\' AND password=\'"+password+"\'";
-        int size=0;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(url, username, password);
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
-
-            if (rs != null)
-            {
-                rs.last();    // moves cursor to the last row
-                size = rs.getRow(); // get row id
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (size == 0) {
-            System.out.println("Size is 0");
-            return false;
-        } else {
-            System.out.println("Size is > 0");
-            return true;
-        }
+        return Objects.nonNull(retrieveAccount(query));
     }
 
+    @Override
     public boolean createAccount(Account account) {
-        if (account != null) {
-            StringBuilder query = new StringBuilder();
-            query.append("INSERT INTO Accounts (UserID, Username, Password, FirstName, LastName, Email, Gender, BirthDate, Nationality, Interest, Region) VALUES (");
-            query.append(account.getUserId());
-            query.append(COMMA_SPACE);
-            query.append(account.getUserName());
-            query.append(COMMA_SPACE);
-            query.append(account.getPassword());
-            query.append(COMMA_SPACE);
-            query.append(account.getFirstName());
-            query.append(COMMA_SPACE);
-            query.append(account.getLastName());
-            query.append(COMMA_SPACE);
-            query.append(account.getEmail());
-            query.append(COMMA_SPACE);
-            query.append(account.getGender());
-            query.append(COMMA_SPACE);
-            query.append(account.getBirthDate());
-            query.append(COMMA_SPACE);
-            query.append(account.getNationality());
-            query.append(COMMA_SPACE);
-            query.append(account.getInterest());
-            query.append(COMMA_SPACE);
-            query.append(account.getRegion());
-            query.append(")");
-
-            System.out.println("Constructed: " + query);
-
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                con = DriverManager.getConnection(url, username, password);
-                stmt = con.createStatement();
-                rs = stmt.executeQuery(query.toString());
-
-                rs.close();
-                stmt.close();
-                con.close();
-
-                return true;
-            } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return false;
+        return retriever.insertStatement(account);
     }
 
-    public String openConnection(){
-        return "Open Connection - Success";
-    }
-
-    public String closeConnection() {
-        return "Close Connection - Success";
-    }
-
-    public Account getAccountByID(int userID) throws SQLException {
+    @Override
+    public Account getAccountByID(int userID) {
         String query = "SELECT * FROM Accounts WHERE UserID = " + userID;
-        Account account = null;
 
-        con = DriverManager.getConnection(url, username, password);
-        stmt = con.createStatement();
-        rs = stmt.executeQuery(query);
+        return retrieveAccount(query);
+    }
 
-        while(rs.next()) {
-            int id = rs.getInt("UserID");
-            String userName = rs.getString("Username");
-            String password = rs.getString("Password");
-            String firstName = rs.getString("FirstName");
-            String lastName = rs.getString("LastName");
-            String email = rs.getString("Email");
-            String gender = rs.getString("Gender");
-            String birthDate = rs.getString("BirthDate");
-            String nationality = rs.getString("Nationality");
-            String interest = rs.getString("Interest");
-            String region = rs.getString("Region");
+    private Account retrieveAccount(String query) {
+        List<Account> results = retriever.retrieveStatement(query).stream().map(o -> (Account) o).collect(Collectors.toList());
 
-            account = new Account(id,userName,password,firstName,lastName,email,gender,birthDate,nationality,interest,region);
-        }
+        if (results.size() == 1)
+            return results.iterator().next();
 
-        rs.close();
-        stmt.close();
-        con.close();
-
-        return account;
+        System.out.println("Unexpected number of accounts returned: " + results.size());
+        return null;
     }
 }

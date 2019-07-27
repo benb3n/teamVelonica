@@ -5,34 +5,20 @@
  */
 package com.example.pojo;
 
+import lombok.Data;
+
 /**
  *
  * @author cathylee
  */
+
+@Data
 public class Organisation {
-    
-    private String OrganisationName;
-    private String OrganisationID;
-    
-    public Organisation(){}
-    
-    public Organisation(String OrganisationName, String OrganisationID){
-        this.OrganisationName = OrganisationName;
-        this.OrganisationID = OrganisationID;
-    
-    
+    private String id;
+    private String name;
+
+    public Organisation(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
-    public String getOrganisationID(){
-        return this.OrganisationID;
-    }
-    public String getOrganisationName(){
-        return this.OrganisationName;
-    }
-    public void setOrganisationID(String OrganisationID){
-        this.OrganisationID = OrganisationID;
-    }
-    public void setOrganisationName(String OrganisationName){
-        this.OrganisationName = OrganisationName;
-    }
-    
 }

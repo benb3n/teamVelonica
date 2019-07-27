@@ -2,7 +2,6 @@ package com.example.dao;
 
 import com.example.pojo.Access;
 
-import java.util.HashMap;
 import java.util.List;
 
 public interface IAccessDao {
@@ -14,4 +13,6 @@ public interface IAccessDao {
     boolean createAccess(int userID);
 
     boolean createAccess(Access access);
+
+    boolean deleteAccess(Access access);
 }

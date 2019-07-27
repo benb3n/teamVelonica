@@ -6,11 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/organisations")
+@RequestMapping("/organizations")
 public class AccessesController {
     @Autowired
     private IRegistrationService service;
@@ -32,7 +33,25 @@ public class AccessesController {
     }
 
     @GetMapping(value = "/accesses/{id}")
-    public List<Access> retrieveAccessesByID(@PathVariable("id") int id) {
-        return service.retrieveAllAccesses(id);
+    public List<Access> retrieveAccessesByID(@PathVariable("id") int currentUserID, @RequestBody int idToRetrieve) {
+        return service.retrieveAllAccesses(currentUserID);
     }
+
+    @DeleteMapping(value = "/accesses/{id}")
+    public ResponseEntity deleteAdminAccess(@PathVariable("id") int id, @RequestBody Access accessToDelete) {
+        if (Objects.isNull(accessToDelete))
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+        if (Objects.isNull(service.retrieve(id)) || Objects.isNull(service.retrieve(accessToDelete.getUserID()))) {
+            System.out.println("User does not exist, cannot delete access.");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        if (service.deleteAccess(id, accessToDelete))
+             return new ResponseEntity(HttpStatus.OK);
+
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

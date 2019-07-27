@@ -13,10 +13,8 @@ import java.util.List;
  * @author cathylee
  */
 public interface IOrganisationDAO {
+    // Return the list of organisers
+    List<Organisation> getAllOrganisations();
     Organisation getOrganiserByName(String orgName);
     Organisation getOrganiserById(String orgId);
-    List<Organisation> getAllAccounts();
-    
-    
-    
 }

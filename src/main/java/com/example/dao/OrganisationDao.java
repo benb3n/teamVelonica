@@ -1,126 +1,94 @@
 package com.example.dao;
 
+import com.example.helpers.Field;
+import com.example.pojo.Access;
 import com.example.pojo.Organisation;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.example.helpers.ConstantHelper.COMMA_SPACE;
 
 /**
  * Created by luqman on 27/7/2019.
  */
 @Repository
 public class OrganisationDao implements IOrganisationDAO {
-    String username;
-    String password;
-    String url;
-    ResultSet rs;
-    Connection con;
-    Statement stmt;
+    OrganisationDao() {}
+    private final DataRetriever retriever = new DataRetriever() {
+        @Override
+        List<Object> parseResultSet(ResultSet rs) throws SQLException {
+            List<Object> organisations = new ArrayList<>();
+            while (rs.next()) {
+                String organisationID = rs.getString(Field.ORGANISATION_ID);
+                String organisationName = rs.getString(Field.ORGANISATION_NAME);
 
-    public OrganisationDao() {
-        username ="CitiAdmin";
-        password = "citihack2019";
-        url = "jdbc:mysql://citihack2019.cwop36kfff9j.ap-southeast-1.rds.amazonaws.com:3306/innodb";
-    }
-
-    public OrganisationDao(String username,String password,String url) {
-        this.username=username;
-        this.password=password;
-        this.url=url;
-    }
-
-    // Return the list of organisers
-    public List<Organisation> getAllAccounts() {
-        List<Organisation> organisations = new ArrayList<>();
-        String query = "SELECT * FROM Organisers";
-        System.out.println("query is "+query);
-        System.out.println("url is "+url);
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(url, username, password);
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
-
-            System.out.println("Running getAllAccounts");
-
-            while(rs.next()) {
-                Organisation org = new Organisation();
-                org.setOrganisationID(rs.getString("OrganiserId"));
-                org.setOrganisationName(rs.getString("OrganiserName"));
-
-                organisations.add(org);
+                Organisation organisationObj = new Organisation(organisationID, organisationName);
+                System.out.println("Retrieved access object: " + organisationObj.toString());
+                organisations.add(organisationObj);
             }
 
-            rs.close();
-            stmt.close();
-            con.close();
-
             return organisations;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println("DONE!");
-
-
         }
-        return organisations;
+
+        @Override
+        boolean insertStatement(Object object) {
+            return false;
+        }
+
+        @Override
+        boolean updateStatement(String query) {
+            return false;
+        }
+
+        @Override
+        boolean deleteStatement(String query) {
+            return false;
+        }
+
+        @Override
+        int retrieveMaxID(String query) {
+            return 0;
+        }
+    };
+
+    // Return the list of organisers
+    @Override
+    public List<Organisation> getAllOrganisations() {
+        String query = "SELECT * FROM Organisations";
+        return retriever.retrieveStatement(query).stream().map(o -> (Organisation) o).collect(Collectors.toList());
     }
 
     // return specific organizers
     @Override
     public Organisation getOrganiserByName(String orgName) {
-        String query = "Select * from Organisers where OrganiserName=\'"+orgName+"\'";
-        Organisation org = new Organisation();
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(url, username, password);
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+        String query = "SELECT * FROM Organisations where OrganisationName = ?";
 
-            while(rs.next()) {
-                org.setOrganisationID(rs.getString("OrganiserID"));
-                org.setOrganisationName(rs.getString("OrganiserName"));
-            }
-
-            rs.close();
-            stmt.close();
-            con.close();
-
-            return org;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return org;
+        return retrieveSingleOrganisation(orgName, query);
     }
 
+    private Organisation retrieveSingleOrganisation(String orgName, String query) {
+        List<Organisation> result =
+                retriever.retrievePreparedStatement(query, Collections.singletonList(orgName))
+                        .stream()
+                        .map(o -> (Organisation) o)
+                        .collect(Collectors.toList());
+
+        if (result.size() == 1)
+            return result.iterator().next();
+
+        System.out.println("Received unexpected number of organisations: " + result.size());
+        return null;
+    }
+
+    @Override
     public Organisation getOrganiserById(String orgId) {
-        String query = "Select * from Organisers where OrganiserID=\'"+orgId+"\'";
-        Organisation org = new Organisation();
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(url, username, password);
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
-
-            while(rs.next()) {
-                org.setOrganisationID(rs.getString("OrganiserID"));
-                org.setOrganisationName(rs.getString("OrganiserName"));
-            }
-
-            rs.close();
-            stmt.close();
-            con.close();
-
-            return org;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return org;
+        String query = "SELECT * FROM Organisation where OrganiserID = " + orgId;
+        return retrieveSingleOrganisation(orgId, query);
     }
 
 }
