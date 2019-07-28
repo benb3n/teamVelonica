@@ -19,7 +19,7 @@ public class AccountsController {
         if (Objects.isNull(resource))
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        if (Objects.nonNull(service.retrieve(resource.getUserName()))) {
+        if (Objects.nonNull(service.retrieve(resource.getEmail()))) {
             System.out.println("User already exists, cannot create.");
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }

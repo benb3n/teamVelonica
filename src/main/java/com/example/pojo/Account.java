@@ -1,13 +1,15 @@
 package com.example.pojo;
 
+import lombok.ToString;
+
 /**
  * Created by luqman on 27/7/2019.
  */
 
+@ToString
 public class Account {
 
     private int userId;
-    private String userName;
     private String password;
     private String firstName;
     private String lastName;
@@ -22,8 +24,7 @@ public class Account {
     public Account() {}
 
     // Populate with all the different properties
-    public Account(String userName, String password, String firstName, String lastName, String email, String gender, String birthDate, String nationality, String interest, String region) {
-        this.userName = userName;
+    public Account(String password, String firstName, String lastName, String email, String gender, String birthDate, String nationality, String interest, String region) {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -36,9 +37,8 @@ public class Account {
     }
 
     // Populate with all the different properties including userId
-    public Account(int userId, String userName, String password, String firstName, String lastName, String email, String gender, String birthDate, String nationality, String interest, String region) {
+    public Account(int userId, String password, String firstName, String lastName, String email, String gender, String birthDate, String nationality, String interest, String region) {
         this.userId = userId;
-        this.userName = userName;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -56,14 +56,6 @@ public class Account {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getPassword() {

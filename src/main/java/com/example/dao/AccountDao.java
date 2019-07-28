@@ -27,7 +27,6 @@ public class AccountDao implements IAccountDao {
             List<Object> accounts = new ArrayList<>();
             while (rs.next()) {
                 int id = rs.getInt(Field.USER_ID);
-                String userName = rs.getString(Field.USERNAME);
                 String password = rs.getString(Field.PASSWORD);
                 String firstName = rs.getString(Field.FIRST_NAME);
                 String lastName = rs.getString(Field.LAST_NAME);
@@ -38,7 +37,7 @@ public class AccountDao implements IAccountDao {
                 String interest = rs.getString(Field.INTEREST);
                 String region = rs.getString(Field.REGION);
 
-                Account account = new Account(id, userName, password, firstName, lastName, email, gender, birthDate, nationality, interest, region);
+                Account account = new Account(id, password, firstName, lastName, email, gender, birthDate, nationality, interest, region);
 
                 System.out.println("Retrieved access object: " + account.toString());
                 accounts.add(account);
@@ -55,7 +54,6 @@ public class AccountDao implements IAccountDao {
                 StringBuilder query = new StringBuilder();
                 query.append("INSERT INTO Accounts\n" +
                         "(UserID,\n" +
-                        "Username,\n" +
                         "Password,\n" +
                         "FirstName,\n" +
                         "LastName,\n" +
@@ -69,8 +67,6 @@ public class AccountDao implements IAccountDao {
                         "(");
 
                 query.append(account.getUserId());
-                query.append(COMMA_SPACE);
-                appendStringParameterNullable(account.getUserName(), query);
                 query.append(COMMA_SPACE);
                 appendStringParameterNullable(account.getPassword(), query);
                 query.append(COMMA_SPACE);
@@ -105,7 +101,6 @@ public class AccountDao implements IAccountDao {
                 String query = "UPDATE Accounts " +
                         "SET " +
                         "UserID = \'" + account.getUserId() + "\'," +
-                        "Username = \'" + account.getUserName() + "\', " +
                         "Password = \'" + account.getPassword() + "\'," +
                         "FirstName = \'" + account.getFirstName() + "\'," +
                         "LastName = \'" + account.getLastName() + "\'," +
@@ -157,8 +152,8 @@ public class AccountDao implements IAccountDao {
     }
 
     @Override
-    public Account getAccountByUsername(String username) {
-        String query = "SELECT * FROM Accounts WHERE Username = \'" + username + "\'";
+    public Account getAccountByEmail(String email) {
+        String query = "SELECT * FROM Accounts WHERE Email = \'" + email + "\'";
         return retrieveAccount(query);
     }
 
@@ -171,8 +166,8 @@ public class AccountDao implements IAccountDao {
     }
 
     @Override
-    public boolean loginInfo(String username, String password) {
-        String query = "SELECT * FROM Accounts WHERE username=\'"+username+"\' AND password=\'"+password+"\'";
+    public boolean loginInfo(String email, String password) {
+        String query = "SELECT * FROM Accounts WHERE Email = \'" + email + "\' AND Password=\'" + password + "\'";
         return Objects.nonNull(retrieveAccount(query));
     }
 
@@ -183,8 +178,6 @@ public class AccountDao implements IAccountDao {
 
     @Override
     public boolean updateAccountParticulars(Account account) {
-
-
         return retriever.updateStatement(account);
     }
 

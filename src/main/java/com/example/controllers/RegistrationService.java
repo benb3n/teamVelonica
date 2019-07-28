@@ -8,8 +8,6 @@ import com.example.pojo.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,8 +45,8 @@ public class RegistrationService implements IRegistrationService {
     }
 
     @Override
-    public Account retrieve(String username) {
-        return accountDao.getAccountByUsername(username);
+    public Account retrieve(String email) {
+        return accountDao.getAccountByEmail(email);
     }
 
     @Override

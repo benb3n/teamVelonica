@@ -10,7 +10,7 @@ public interface IRegistrationService {
 
     boolean createAccess(Access access);
 
-    Account retrieve(String username);
+    Account retrieve(String email);
 
     Account retrieve(int id);
 

@@ -8,12 +8,12 @@ import java.util.List;
 public interface IAccountDao {
     // Return the list of accounts
     List<Account> getAllAccounts();
-    Account getAccountByUsername(String username) throws SQLException;
+    Account getAccountByEmail(String email) throws SQLException;
 
     // Return the number of rows
     int getCountRows() throws SQLException, ClassNotFoundException;
 
-    boolean loginInfo(String username, String password);
+    boolean loginInfo(String email, String password);
 
     boolean createAccount(Account account);
 
