@@ -157,7 +157,7 @@ public class AccountDao implements IAccountDao {
     @Override
     public List<Account> getAllAccounts() {
         String query = "SELECT * FROM Accounts";
-        return retriever.retrieveStatement(query).stream().map(o -> (Account) o).collect(Collectors.toList());
+        return mapToAccount(retriever.retrieveStatement(query));
     }
 
     @Override
@@ -206,12 +206,16 @@ public class AccountDao implements IAccountDao {
     }
 
     private Account retrieveAccount(String query) {
-        List<Account> results = retriever.retrieveStatement(query).stream().map(o -> (Account) o).collect(Collectors.toList());
+        List<Account> results = mapToAccount(retriever.retrieveStatement(query));
 
         if (results.size() == 1)
             return results.iterator().next();
 
         System.out.println("Unexpected number of accounts returned: " + results.size());
         return null;
+    }
+
+    List<Account> mapToAccount(List<Object> objects) {
+        return objects.stream().map(o -> (Account) o).collect(Collectors.toList());
     }
 }
