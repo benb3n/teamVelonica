@@ -38,7 +38,7 @@ public class AccessesController {
     }
 
     @GetMapping(value = "/accesses/{id}")
-    public List<Access> retrieveAccessesByID(@PathVariable("id") int currentUserID, int idToRetrieve) {
+    public List<Access> retrieveAccessesByID(@PathVariable("id") int currentUserID) {
         return service.retrieveAllAccesses(currentUserID);
     }
 
