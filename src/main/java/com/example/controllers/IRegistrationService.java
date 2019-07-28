@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.example.pojo.Access;
 import com.example.pojo.Account;
+import com.example.pojo.Organisation;
 
 import java.util.List;
 
@@ -10,9 +11,11 @@ public interface IRegistrationService {
 
     boolean createAccess(Access access);
 
-    Account retrieve(String email);
+    Account retrieveAccount(String email);
 
-    Account retrieve(int id);
+    Account retrieveAccount(int id);
+
+    Organisation retrieveOrganisation(String orgID);
 
     List<Access> retrieveAllAccesses(int id);
 

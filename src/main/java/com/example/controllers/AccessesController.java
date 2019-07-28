@@ -20,8 +20,13 @@ public class AccessesController {
         if (Objects.isNull(access))
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        if (Objects.isNull(service.retrieve(access.getUserID()))) {
+        if (Objects.isNull(service.retrieveAccount(access.getUserID()))) {
             System.out.println("User does not exist, cannot add access.");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        if (Objects.isNull(service.retrieveOrganisation(access.getOrganisationID()))) {
+            System.out.println("Organisation does not exist, cannot add access to invalid organisation.");
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
@@ -41,7 +46,7 @@ public class AccessesController {
         if (Objects.isNull(accessToDelete))
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        if (Objects.isNull(service.retrieve(id)) || Objects.isNull(service.retrieve(accessToDelete.getUserID()))) {
+        if (Objects.isNull(service.retrieveAccount(id)) || Objects.isNull(service.retrieveAccount(accessToDelete.getUserID()))) {
             System.out.println("User does not exist, cannot delete access.");
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
