@@ -1,40 +1,51 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.example.dao;
 
 import com.example.helpers.AccessType;
+import static com.example.helpers.ConstantHelper.COMMA_SPACE;
 import com.example.helpers.Field;
 import com.example.pojo.Access;
-import org.springframework.stereotype.Repository;
-
-import java.sql.*;
-import java.util.*;
+import com.example.pojo.Account;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.example.helpers.ConstantHelper.COMMA_SPACE;
-
-
 /**
- * Created by michelle on 27/7/2019.
+ *
+ * @author cathylee
  */
-@Repository
-public class AccessDao implements IAccessDao {
-    AccessDao() { }
+public class AccountAccessDao implements IAccountAccessDao {
 
     private final DataRetriever retriever = new DataRetriever() {
         @Override
         List<Object> parseResultSet(ResultSet rs) throws SQLException {
-            List<Object> accesses = new ArrayList<>();
+            List<Object> accessMap = new ArrayList<>();
+
             while (rs.next()) {
 
                 int userID = rs.getInt(Field.USER_ID);
                 String access = rs.getString(Field.ACCESS);
-                String organisationID = rs.getString(Field.ORGANISATION_ID);
+                String email = rs.getString(Field.EMAIL);
 
-                Access accessObj = new Access(userID, AccessType.valueOf(access), organisationID);
-                System.out.println("Retrieved access object: " + accessObj.toString());
-                accesses.add(accessObj);
+                HashMap<String, Object> accessObj = new HashMap<>();
+                accessObj.put("userID", userID);
+                accessObj.put("access", access);
+                accessObj.put("email", email);
+                accessMap.add(accessObj);
+
+                System.out.println("Retrieved access object: " + accessMap.toString());
+
             }
 
-            return accesses;
+            return accessMap;
         }
 
         @Override
@@ -90,43 +101,21 @@ public class AccessDao implements IAccessDao {
             System.out.println("ERROR: Bad Object.");
             return false;
         }
-        
-        
-    };
 
-    // Return the full list of accesses
-    @Override
-    public List<Access> getAllAccesses() {
-        String query = "SELECT * FROM Accesses";
-        return mapToAccess(retriever.retrieveStatement(query));
-    }
+    };
 
     // Return the list of accesses for a given user ID
     @Override
-    public List<Access> retrieveAccessByUserID(int userID) {
-        String query = "SELECT * FROM Accesses WHERE  UserID = " + userID;
+    public List<Object> retrieveAccessByEmail(String email) {
+        String query = "SELECT * FROM accountAccess WHERE  email = " + email;
 
         return mapToAccess(retriever.retrieveStatement(query));
     }
 
-    private List<Access> mapToAccess(List<Object> results) {
-        return results.stream().map(result -> (Access) result).collect(Collectors.toList());
+    private List<Object> mapToAccess(List<Object> results) {
+        return results.stream().map(result -> (Object) result).collect(Collectors.toList());
     }
-
-    @Override
-    public boolean createAccess(int userID) {
-        return createAccess(new Access(userID, AccessType.VOLUNTEER, null));
-    }
-
-    @Override
-    public boolean createAccess(Access access) {
-        return retriever.insertStatement(access);
-    }
-
-    @Override
-    public boolean deleteAccess(Access access) {
-        return retriever.deleteStatement(access);
-    }
-  
     
+   
+
 }
