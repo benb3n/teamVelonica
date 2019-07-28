@@ -5,7 +5,7 @@ import com.example.pojo.Account;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface IAccountDAO {
+public interface IAccountDao {
     // Return the list of accounts
     List<Account> getAllAccounts();
     Account getAccountByUsername(String username) throws SQLException;
@@ -16,6 +16,8 @@ public interface IAccountDAO {
     boolean loginInfo(String username, String password);
 
     boolean createAccount(Account account);
+
+    boolean updateAccountParticulars(Account account);
 
     Account getAccountByID(int userID) throws SQLException;
 }

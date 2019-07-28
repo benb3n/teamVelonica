@@ -105,10 +105,13 @@ abstract class DataRetriever {
                 pstmt.setInt(i+1, (Integer) parameters.get(i));
         }
     }
+
+    int retrieveMaxID(String query) throws SQLException, ClassNotFoundException {
+        return 0;
+    };
+
     abstract List<Object> parseResultSet(ResultSet rs) throws SQLException;
     abstract boolean insertStatement(Object object);
     abstract boolean updateStatement(String query);
     abstract boolean deleteStatement(String query);
-
-    abstract int retrieveMaxID(String query) throws SQLException, ClassNotFoundException;
 }

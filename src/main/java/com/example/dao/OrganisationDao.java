@@ -49,11 +49,6 @@ public class OrganisationDao implements IOrganisationDAO {
         boolean deleteStatement(String query) {
             return false;
         }
-
-        @Override
-        int retrieveMaxID(String query) {
-            return 0;
-        }
     };
 
     // Return the list of organisers

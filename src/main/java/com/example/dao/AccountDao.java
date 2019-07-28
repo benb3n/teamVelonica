@@ -1,10 +1,7 @@
 package com.example.dao;
 
-import com.example.helpers.AccessType;
 import com.example.helpers.Field;
-import com.example.pojo.Access;
 import com.example.pojo.Account;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -21,7 +18,7 @@ import static com.example.helpers.ConstantHelper.COMMA_SPACE;
  */
 
 @Repository
-public class AccountDao implements IAccountDAO {
+public class AccountDao implements IAccountDao {
     AccountDao() { }
 
     private final DataRetriever retriever = new DataRetriever() {
@@ -102,7 +99,7 @@ public class AccountDao implements IAccountDAO {
 
         @Override
         boolean updateStatement(String query) {
-            return false;
+            return this.executeStatement(query);
         }
 
         @Override
@@ -159,6 +156,26 @@ public class AccountDao implements IAccountDAO {
     @Override
     public boolean createAccount(Account account) {
         return retriever.insertStatement(account);
+    }
+
+    @Override
+    public boolean updateAccountParticulars(Account account) {
+        String query = "UPDATE Accounts " +
+                "SET " +
+                "UserID = \'" + account.getUserId() + "\'," +
+                "Username = \'" + account.getUserName() + "\'," +
+                "Password = \'" + account.getPassword() + "\'," +
+                "FirstName = \'" + account.getFirstName() + "\'," +
+                "LastName = \'" + account.getLastName() + "\'," +
+                "Email = \'" + account.getEmail() + "\'," +
+                "Gender = \'" + account.getGender() + "\'," +
+                "BirthDate = \'" + account.getBirthDate() + "\'," +
+                "Nationality = \'" + account.getNationality() + "\'," +
+                "Interest = \'" + account.getInterest() + "\'," +
+                "Region = \'" + account.getRegion() + "\'," +
+                "WHERE UserID = \'" + account.getUserId() + "\',";
+
+        return retriever.updateStatement(query);
     }
 
     @Override

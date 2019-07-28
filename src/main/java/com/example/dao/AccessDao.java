@@ -69,11 +69,6 @@ public class AccessDao implements IAccessDao {
         boolean deleteStatement(String query) {
             return this.executeStatement(query);
         }
-
-        @Override
-        int retrieveMaxID(String query) throws SQLException, ClassNotFoundException {
-            return 0;
-        }
     };
 
     // Return the full list of accesses

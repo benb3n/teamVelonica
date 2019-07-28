@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
-public class AccessDaoTest {
+public class AccessDaoIntegrationTest { // this test accesses the database
     IAccessDao accessDao = new AccessDao();
 
     @Test
