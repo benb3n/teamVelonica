@@ -21,5 +21,7 @@ public interface IAccountDao {
 
     boolean deleteAccount(Account account);
 
+    boolean deleteByQuery(String query);
+
     Account getAccountByID(int userID) throws SQLException;
 }

@@ -37,7 +37,7 @@ public class LoginService implements ILoginService {
                 return null;
             }
             if (account.getEmail().equals(email) && account.getPassword().equals(hashedPassword)) {
-                toReturn.put("ID",account.getUserId());
+                toReturn.put("UserId",account.getUserId());
                 toReturn.put("Email", account.getEmail());
                 toReturn.put("FirstName", account.getFirstName());
                 toReturn.put("LastName", account.getLastName());

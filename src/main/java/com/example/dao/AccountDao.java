@@ -3,9 +3,11 @@ package com.example.dao;
 import com.example.helpers.Field;
 import com.example.pojo.Account;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -194,6 +196,14 @@ public class AccountDao implements IAccountDao {
     public boolean deleteAccount(Account account) {
         if (Objects.nonNull(account)) {
             return retriever.deleteStatement(account);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteByQuery(String query) {
+        if (query!=null && !query.isEmpty()) {
+            return retriever.executeStatement(query);
         }
         return false;
     }
