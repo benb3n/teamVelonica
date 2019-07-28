@@ -5,6 +5,7 @@ import com.example.dao.IAccessDao;
 import com.example.helpers.AccessType;
 import com.example.pojo.Access;
 import com.example.pojo.Account;
+import com.example.security.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,10 @@ public class RegistrationService implements IRegistrationService {
     @Override
     public boolean create(Account resource) {
         if (accountDao.createAccount(resource)) {
+            String password = resource.getPassword();
+            SecurityHelper sh = new SecurityHelper();
+            String hashedPass = sh.encrypt(password).toString();
+            resource.setPassword(hashedPass);
             accessDao.createAccess(resource.getUserId());
         }
         return false;
