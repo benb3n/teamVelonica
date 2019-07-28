@@ -4,7 +4,10 @@ import com.example.helpers.Field;
 import com.example.pojo.Account;
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -85,7 +88,6 @@ public class AccountDao implements IAccountDao {
                 appendStringParameterNullable(account.getInterest(), query);
                 query.append(COMMA_SPACE);
                 appendStringParameterNullable(account.getRegion(), query);
-                query.append(account.getRegion());
                 query.append(")");
 
                 System.out.println("Constructed: " + query);
@@ -100,7 +102,7 @@ public class AccountDao implements IAccountDao {
                 Account account = (Account) object;
                 String query = "UPDATE Accounts " +
                         "SET " +
-                        "UserID = \'" + account.getUserId() + "\'," +
+                        "UserID = " + account.getUserId() + "," +
                         "Password = \'" + account.getPassword() + "\'," +
                         "FirstName = \'" + account.getFirstName() + "\'," +
                         "LastName = \'" + account.getLastName() + "\'," +
@@ -109,9 +111,10 @@ public class AccountDao implements IAccountDao {
                         "BirthDate = \'" + account.getBirthDate() + "\'," +
                         "Nationality = \'" + account.getNationality() + "\'," +
                         "Interest = \'" + account.getInterest() + "\'," +
-                        "Region = \'" + account.getRegion() + "\'," +
-                        "WHERE UserID = \'" + account.getUserId() + "\',";
+                        "Region = \'" + account.getRegion() + "\' " +
+                        "WHERE UserID = " + account.getUserId();
 
+                System.out.println("Constructed update statement: " + query);
                 return this.executeStatement(query);
             }
             return false;
@@ -120,7 +123,15 @@ public class AccountDao implements IAccountDao {
         @Override
         boolean deleteStatement(Object object) {
             if (object instanceof Account) {
-                return false; // TODO
+                Account account = (Account) object;
+                StringBuilder query = new StringBuilder();
+                query.append("DELETE FROM Accounts WHERE ");
+                query.append("Email = ");
+                appendStringParameterNullable(account.getEmail(), query);
+                query.append(" AND UserID = ");
+                query.append(account.getUserId());
+
+                return this.executeStatement(query.toString());
             }
             return false;
         }
@@ -148,7 +159,7 @@ public class AccountDao implements IAccountDao {
     @Override
     public List<Account> getAllAccounts() {
         String query = "SELECT * FROM Accounts";
-        return retriever.retrieveStatement(query).stream().map(o -> (Account) o).collect(Collectors.toList());
+        return mapToAccount(retriever.retrieveStatement(query));
     }
 
     @Override
@@ -159,7 +170,7 @@ public class AccountDao implements IAccountDao {
 
     // Return the number of rows
     @Override
-    public int getCountRows() throws SQLException, ClassNotFoundException {
+    public int getMaxUserID() throws SQLException, ClassNotFoundException {
         String query = "SELECT MAX(UserID) AS MaxID FROM Accounts";
 
         return retriever.retrieveMaxID(query);
@@ -182,6 +193,22 @@ public class AccountDao implements IAccountDao {
     }
 
     @Override
+    public boolean deleteAccount(Account account) {
+        if (Objects.nonNull(account)) {
+            return retriever.deleteStatement(account);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteByQuery(String query) {
+        if (query!=null && !query.isEmpty()) {
+            return retriever.executeStatement(query);
+        }
+        return false;
+    }
+
+    @Override
     public Account getAccountByID(int userID) {
         String query = "SELECT * FROM Accounts WHERE UserID = " + userID;
 
@@ -189,12 +216,16 @@ public class AccountDao implements IAccountDao {
     }
 
     private Account retrieveAccount(String query) {
-        List<Account> results = retriever.retrieveStatement(query).stream().map(o -> (Account) o).collect(Collectors.toList());
+        List<Account> results = mapToAccount(retriever.retrieveStatement(query));
 
         if (results.size() == 1)
             return results.iterator().next();
 
         System.out.println("Unexpected number of accounts returned: " + results.size());
         return null;
+    }
+
+    private List<Account> mapToAccount(List<Object> objects) {
+        return objects.stream().map(o -> (Account) o).collect(Collectors.toList());
     }
 }

@@ -82,7 +82,7 @@ public class OrganisationDao implements IOrganisationDAO {
 
     @Override
     public Organisation getOrganiserById(String orgId) {
-        String query = "SELECT * FROM Organisation where OrganiserID = " + orgId;
+        String query = "SELECT * FROM Organisations where OrganisationID = ?";
         return retrieveSingleOrganisation(orgId, query);
     }
 

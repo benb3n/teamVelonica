@@ -1,7 +1,6 @@
 package com.example.dao;
 
 import com.example.helpers.ConstantHelper;
-import com.example.pojo.Access;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
@@ -51,6 +50,11 @@ abstract class DataRetriever {
     }
 
     List<Object> retrievePreparedStatement(String query, List<Object> parameters) {
+        List<Object> objects = new ArrayList<>();
+
+        if (StringUtils.isEmpty(query))
+            return objects;
+
         int countInQuery = StringUtils.countOccurrencesOf(query, ConstantHelper.QUESTION_MARK);
 
         if (countInQuery != parameters.size()) {
@@ -58,7 +62,6 @@ abstract class DataRetriever {
             return null;
         }
 
-        List<Object> objects = new ArrayList<>();
         try {
             Connection con = openConnection();
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -81,6 +84,9 @@ abstract class DataRetriever {
     }
 
     boolean executeStatement(String query) {
+        if (StringUtils.isEmpty(query))
+            return false;
+
         Connection con;
         try {
             con = openConnection();
@@ -118,10 +124,12 @@ abstract class DataRetriever {
 
     int retrieveMaxID(String query) throws SQLException, ClassNotFoundException {
         return 0;
-    };
+    }
+    boolean deleteAllStatement(int userID) { return false; }
 
     abstract List<Object> parseResultSet(ResultSet rs) throws SQLException;
     abstract boolean insertStatement(Object object);
     abstract boolean updateStatement(Object object);
     abstract boolean deleteStatement(Object object);
+
 }

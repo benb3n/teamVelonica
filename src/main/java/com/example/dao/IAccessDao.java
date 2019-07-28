@@ -15,4 +15,6 @@ public interface IAccessDao {
     boolean createAccess(Access access);
 
     boolean deleteAccess(Access access);
+
+    boolean deleteAllAccesses(int userID);
 }

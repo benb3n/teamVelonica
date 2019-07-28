@@ -90,8 +90,12 @@ public class AccessDao implements IAccessDao {
             System.out.println("ERROR: Bad Object.");
             return false;
         }
-        
-        
+
+        @Override
+        boolean deleteAllStatement(int userID) {
+            String deleteAllQuery = "DELETE FROM Accesses WHERE UserID = " + userID;
+            return this.executeStatement(deleteAllQuery);
+        }
     };
 
     // Return the full list of accesses
@@ -127,6 +131,10 @@ public class AccessDao implements IAccessDao {
     public boolean deleteAccess(Access access) {
         return retriever.deleteStatement(access);
     }
-  
-    
+
+    @Override
+    public boolean deleteAllAccesses(int userID) {
+        return retriever.deleteAllStatement(userID);
+    }
 }
+
