@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +32,7 @@ public class AccessesController {
     }
 
     @GetMapping(value = "/accesses/{id}")
-    public List<Access> retrieveAccessesByID(@PathVariable("id") int currentUserID, @RequestBody int idToRetrieve) {
+    public List<Access> retrieveAccessesByID(@PathVariable("id") int currentUserID, int idToRetrieve) {
         return service.retrieveAllAccesses(currentUserID);
     }
 
