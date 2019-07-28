@@ -182,6 +182,14 @@ public class AccountDao implements IAccountDao {
     }
 
     @Override
+    public boolean deleteStatement(String query) {
+        if (query!=null || !query.isEmpty()) {
+            return retriever.executeStatement(query);
+        }
+        return false;
+    }
+
+    @Override
     public Account getAccountByID(int userID) {
         String query = "SELECT * FROM Accounts WHERE UserID = " + userID;
 
