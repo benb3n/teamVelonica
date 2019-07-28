@@ -4,6 +4,7 @@ import com.example.dao.AccessDao;
 import com.example.dao.AccountDao;
 import com.example.pojo.Access;
 import com.example.pojo.Account;
+import com.example.security.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +31,12 @@ public class LoginService implements ILoginService {
         //accountDao = new AccountDao();
         try {
             Account account = accountDao.getAccountByEmail(email);
+            SecurityHelper sh = new SecurityHelper();
+            String hashedPassword = sh.encrypt(password).toString();
             if (account == null) {
                 return null;
             }
-            if (account.getEmail().equals(email) && account.getPassword().equals(password)) {
+            if (account.getEmail().equals(email) && account.getPassword().equals(hashedPassword)) {
                 toReturn.put("ID",account.getUserId());
                 toReturn.put("Email", account.getEmail());
                 toReturn.put("FirstName", account.getFirstName());
