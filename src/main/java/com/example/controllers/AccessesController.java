@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.helpers.AccessType;
 import com.example.pojo.Access;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,11 @@ public class AccessesController {
 
         if (Objects.isNull(service.retrieveAccount(id)) || Objects.isNull(service.retrieveAccount(accessToDelete.getUserID()))) {
             System.out.println("User does not exist, cannot delete access.");
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        if (accessToDelete.getAccess() == AccessType.VOLUNTEER) {
+            System.out.println("Cannot delete VOLUNTEER access.");
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 

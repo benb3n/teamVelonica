@@ -20,4 +20,6 @@ public interface IRegistrationService {
     List<Access> retrieveAllAccesses(int id);
 
     boolean deleteAccess(int currentUserID, Access access);
+
+    boolean deleteAccount(String email);
 }

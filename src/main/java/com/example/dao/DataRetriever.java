@@ -123,9 +123,11 @@ abstract class DataRetriever {
     int retrieveMaxID(String query) throws SQLException, ClassNotFoundException {
         return 0;
     }
+    boolean deleteAllStatement(int userID) { return false; }
 
     abstract List<Object> parseResultSet(ResultSet rs) throws SQLException;
     abstract boolean insertStatement(Object object);
     abstract boolean updateStatement(Object object);
     abstract boolean deleteStatement(Object object);
+
 }

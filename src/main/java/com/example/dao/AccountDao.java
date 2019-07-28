@@ -215,7 +215,7 @@ public class AccountDao implements IAccountDao {
         return null;
     }
 
-    List<Account> mapToAccount(List<Object> objects) {
+    private List<Account> mapToAccount(List<Object> objects) {
         return objects.stream().map(o -> (Account) o).collect(Collectors.toList());
     }
 }
