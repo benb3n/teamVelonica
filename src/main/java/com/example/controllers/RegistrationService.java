@@ -2,9 +2,11 @@ package com.example.controllers;
 
 import com.example.dao.AccountDao;
 import com.example.dao.IAccessDao;
+import com.example.dao.IOrganisationDAO;
 import com.example.helpers.AccessType;
 import com.example.pojo.Access;
 import com.example.pojo.Account;
+import com.example.pojo.Organisation;
 import com.example.security.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class RegistrationService implements IRegistrationService {
 
     @Autowired
     private IAccessDao accessDao;
+
+    @Autowired
+    private IOrganisationDAO organisationDAO;
 
     @Override
     public boolean create(Account resource) {
@@ -50,13 +55,18 @@ public class RegistrationService implements IRegistrationService {
     }
 
     @Override
-    public Account retrieve(String email) {
+    public Account retrieveAccount(String email) {
         return accountDao.getAccountByEmail(email);
     }
 
     @Override
-    public Account retrieve(int userID) {
+    public Account retrieveAccount(int userID) {
         return accountDao.getAccountByID(userID);
+    }
+
+    @Override
+    public Organisation retrieveOrganisation(String orgID) {
+        return organisationDAO.getOrganiserById(orgID);
     }
 
     @Override
