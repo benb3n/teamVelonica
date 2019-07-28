@@ -3,6 +3,7 @@ package com.example.dao;
 import com.example.helpers.Field;
 import com.example.pojo.Account;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -85,7 +86,6 @@ public class AccountDao implements IAccountDao {
                 appendStringParameterNullable(account.getInterest(), query);
                 query.append(COMMA_SPACE);
                 appendStringParameterNullable(account.getRegion(), query);
-                query.append(account.getRegion());
                 query.append(")");
 
                 System.out.println("Constructed: " + query);
@@ -100,7 +100,7 @@ public class AccountDao implements IAccountDao {
                 Account account = (Account) object;
                 String query = "UPDATE Accounts " +
                         "SET " +
-                        "UserID = \'" + account.getUserId() + "\'," +
+                        "UserID = " + account.getUserId() + "," +
                         "Password = \'" + account.getPassword() + "\'," +
                         "FirstName = \'" + account.getFirstName() + "\'," +
                         "LastName = \'" + account.getLastName() + "\'," +
@@ -109,9 +109,10 @@ public class AccountDao implements IAccountDao {
                         "BirthDate = \'" + account.getBirthDate() + "\'," +
                         "Nationality = \'" + account.getNationality() + "\'," +
                         "Interest = \'" + account.getInterest() + "\'," +
-                        "Region = \'" + account.getRegion() + "\'," +
-                        "WHERE UserID = \'" + account.getUserId() + "\',";
+                        "Region = \'" + account.getRegion() + "\' " +
+                        "WHERE UserID = " + account.getUserId();
 
+                System.out.println("Constructed update statement: " + query);
                 return this.executeStatement(query);
             }
             return false;
@@ -120,7 +121,15 @@ public class AccountDao implements IAccountDao {
         @Override
         boolean deleteStatement(Object object) {
             if (object instanceof Account) {
-                return false; // TODO
+                Account account = (Account) object;
+                StringBuilder query = new StringBuilder();
+                query.append("DELETE FROM Accounts WHERE ");
+                query.append("Email = ");
+                appendStringParameterNullable(account.getEmail(), query);
+                query.append(" AND UserID = ");
+                query.append(account.getUserId());
+
+                return this.executeStatement(query.toString());
             }
             return false;
         }
@@ -182,9 +191,9 @@ public class AccountDao implements IAccountDao {
     }
 
     @Override
-    public boolean deleteStatement(String query) {
-        if (query!=null || !query.isEmpty()) {
-            return retriever.executeStatement(query);
+    public boolean deleteAccount(Account account) {
+        if (Objects.nonNull(account)) {
+            return retriever.deleteStatement(account);
         }
         return false;
     }

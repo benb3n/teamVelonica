@@ -59,6 +59,12 @@ public class AccountDaoIntegrationTest {
             Account account = accountDao.getAccountByID(maxUserID);
             assertNotNull(account);
 
+            success = accountDao.deleteAccount(account);
+            assertTrue(success);
+
+            account = accountDao.getAccountByID(maxUserID);
+            assertNull(account);
+
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -94,6 +100,13 @@ public class AccountDaoIntegrationTest {
 
             account = accountDao.getAccountByID(maxUserID);
             assertEquals(account.getBirthDate(), birthDate);
+
+            success = accountDao.deleteAccount(account);
+            assertTrue(success);
+
+            account = accountDao.getAccountByID(maxUserID);
+            assertNull(account);
+
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }

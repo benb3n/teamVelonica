@@ -19,7 +19,7 @@ public interface IAccountDao {
 
     boolean updateAccountParticulars(Account account);
 
-    boolean deleteStatement(String query);
+    boolean deleteAccount(Account account);
 
     Account getAccountByID(int userID) throws SQLException;
 }
