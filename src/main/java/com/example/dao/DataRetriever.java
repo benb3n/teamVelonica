@@ -33,8 +33,10 @@ abstract class DataRetriever {
 
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
+           
 
             objects = this.parseResultSet(rs);
+            System.out.println(objects);
 
             rs.close();
             stmt.close();

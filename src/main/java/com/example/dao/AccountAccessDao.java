@@ -17,11 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author cathylee
  */
+@Repository
 public class AccountAccessDao implements IAccountAccessDao {
 
     private final DataRetriever retriever = new DataRetriever() {
@@ -107,7 +109,7 @@ public class AccountAccessDao implements IAccountAccessDao {
     // Return the list of accesses for a given user ID
     @Override
     public List<Object> retrieveAccessByEmail(String email) {
-        String query = "SELECT * FROM accountAccess WHERE  email = " + email;
+        String query = "SELECT * FROM accountAccess WHERE  email = '" + email +"'";
 
         return mapToAccess(retriever.retrieveStatement(query));
     }
