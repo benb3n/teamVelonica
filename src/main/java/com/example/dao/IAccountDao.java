@@ -11,7 +11,7 @@ public interface IAccountDao {
     Account getAccountByEmail(String email) throws SQLException;
 
     // Return the number of rows
-    int getCountRows() throws SQLException, ClassNotFoundException;
+    int getMaxUserID() throws SQLException, ClassNotFoundException;
 
     boolean loginInfo(String email, String password);
 

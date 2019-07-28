@@ -159,7 +159,7 @@ public class AccountDao implements IAccountDao {
 
     // Return the number of rows
     @Override
-    public int getCountRows() throws SQLException, ClassNotFoundException {
+    public int getMaxUserID() throws SQLException, ClassNotFoundException {
         String query = "SELECT MAX(UserID) AS MaxID FROM Accounts";
 
         return retriever.retrieveMaxID(query);
