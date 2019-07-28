@@ -1,13 +1,12 @@
 package com.example.dao;
 
 import com.example.helpers.ConstantHelper;
+import com.example.pojo.Access;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by michelle on 27/7/2019.
@@ -44,7 +43,7 @@ abstract class DataRetriever {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            System.out.println("Access objects retrieved!");
+            System.out.println("Objects retrieved!");
         }
         return objects;
     }
@@ -106,12 +105,21 @@ abstract class DataRetriever {
         }
     }
 
+    void appendStringParameterNullable(String value, StringBuilder query) {
+        if (Objects.nonNull(value)) {
+            query.append("\'");
+            query.append(value);
+            query.append("\'");
+        } else
+            query.append("null");
+    }
+
     int retrieveMaxID(String query) throws SQLException, ClassNotFoundException {
         return 0;
     };
 
     abstract List<Object> parseResultSet(ResultSet rs) throws SQLException;
     abstract boolean insertStatement(Object object);
-    abstract boolean updateStatement(String query);
-    abstract boolean deleteStatement(String query);
+    abstract boolean updateStatement(Object object);
+    abstract boolean deleteStatement(Object object);
 }

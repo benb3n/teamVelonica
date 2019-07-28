@@ -41,12 +41,12 @@ public class OrganisationDao implements IOrganisationDAO {
         }
 
         @Override
-        boolean updateStatement(String query) {
+        boolean updateStatement(Object object) {
             return false;
         }
 
         @Override
-        boolean deleteStatement(String query) {
+        boolean deleteStatement(Object object) {
             return false;
         }
     };
@@ -55,7 +55,7 @@ public class OrganisationDao implements IOrganisationDAO {
     @Override
     public List<Organisation> getAllOrganisations() {
         String query = "SELECT * FROM Organisations";
-        return retriever.retrieveStatement(query).stream().map(o -> (Organisation) o).collect(Collectors.toList());
+        return retriever.retrieveStatement(query).stream().map(result -> (Organisation) result).collect(Collectors.toList());
     }
 
     // return specific organizers

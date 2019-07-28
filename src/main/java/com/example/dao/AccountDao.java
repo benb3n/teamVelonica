@@ -70,24 +70,25 @@ public class AccountDao implements IAccountDao {
 
                 query.append(account.getUserId());
                 query.append(COMMA_SPACE);
-                query.append(account.getUserName());
+                appendStringParameterNullable(account.getUserName(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getPassword());
+                appendStringParameterNullable(account.getPassword(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getFirstName());
+                appendStringParameterNullable(account.getFirstName(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getLastName());
+                appendStringParameterNullable(account.getLastName(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getEmail());
+                appendStringParameterNullable(account.getEmail(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getGender());
+                appendStringParameterNullable(account.getGender(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getBirthDate());
+                appendStringParameterNullable(account.getBirthDate(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getNationality());
+                appendStringParameterNullable(account.getNationality(), query);
                 query.append(COMMA_SPACE);
-                query.append(account.getInterest());
+                appendStringParameterNullable(account.getInterest(), query);
                 query.append(COMMA_SPACE);
+                appendStringParameterNullable(account.getRegion(), query);
                 query.append(account.getRegion());
                 query.append(")");
 
@@ -98,13 +99,35 @@ public class AccountDao implements IAccountDao {
         }
 
         @Override
-        boolean updateStatement(String query) {
-            return this.executeStatement(query);
+        boolean updateStatement(Object object) {
+            if (object instanceof Account) {
+                Account account = (Account) object;
+                String query = "UPDATE Accounts " +
+                        "SET " +
+                        "UserID = \'" + account.getUserId() + "\'," +
+                        "Username = \'" + account.getUserName() + "\', " +
+                        "Password = \'" + account.getPassword() + "\'," +
+                        "FirstName = \'" + account.getFirstName() + "\'," +
+                        "LastName = \'" + account.getLastName() + "\'," +
+                        "Email = \'" + account.getEmail() + "\'," +
+                        "Gender = \'" + account.getGender() + "\'," +
+                        "BirthDate = \'" + account.getBirthDate() + "\'," +
+                        "Nationality = \'" + account.getNationality() + "\'," +
+                        "Interest = \'" + account.getInterest() + "\'," +
+                        "Region = \'" + account.getRegion() + "\'," +
+                        "WHERE UserID = \'" + account.getUserId() + "\',";
+
+                return this.executeStatement(query);
+            }
+            return false;
         }
 
         @Override
-        boolean deleteStatement(String query) {
-            return this.executeStatement(query);
+        boolean deleteStatement(Object object) {
+            if (object instanceof Account) {
+                return false; // TODO
+            }
+            return false;
         }
 
         @Override
@@ -160,22 +183,9 @@ public class AccountDao implements IAccountDao {
 
     @Override
     public boolean updateAccountParticulars(Account account) {
-        String query = "UPDATE Accounts " +
-                "SET " +
-                "UserID = \'" + account.getUserId() + "\'," +
-                "Username = \'" + account.getUserName() + "\'," +
-                "Password = \'" + account.getPassword() + "\'," +
-                "FirstName = \'" + account.getFirstName() + "\'," +
-                "LastName = \'" + account.getLastName() + "\'," +
-                "Email = \'" + account.getEmail() + "\'," +
-                "Gender = \'" + account.getGender() + "\'," +
-                "BirthDate = \'" + account.getBirthDate() + "\'," +
-                "Nationality = \'" + account.getNationality() + "\'," +
-                "Interest = \'" + account.getInterest() + "\'," +
-                "Region = \'" + account.getRegion() + "\'," +
-                "WHERE UserID = \'" + account.getUserId() + "\',";
 
-        return retriever.updateStatement(query);
+
+        return retriever.updateStatement(account);
     }
 
     @Override

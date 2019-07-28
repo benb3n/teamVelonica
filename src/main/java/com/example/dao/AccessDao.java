@@ -1,12 +1,9 @@
 package com.example.dao;
 
 import com.example.helpers.AccessType;
-import com.example.helpers.ConstantHelper;
 import com.example.helpers.Field;
 import com.example.pojo.Access;
-import com.example.pojo.Account;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import java.sql.*;
 import java.util.*;
@@ -46,12 +43,12 @@ public class AccessDao implements IAccessDao {
                 Access access = (Access) object;
 
                 StringBuilder query = new StringBuilder();
-                query.append("INSERT INTO Access (UserID, Access, OrganisationID) VALUES (");
+                query.append("INSERT INTO Accesses (UserID, Access, OrganisationID) VALUES (");
                 query.append(access.getUserID());
                 query.append(COMMA_SPACE);
-                query.append(access.getAccess());
+                appendStringParameterNullable(access.getAccess().name(), query);
                 query.append(COMMA_SPACE);
-                query.append(access.getOrganisationID());
+                appendStringParameterNullable(access.getOrganisationID(), query);
                 query.append(")");
 
                 System.out.println("Constructed: " + query);
@@ -61,13 +58,37 @@ public class AccessDao implements IAccessDao {
         }
 
         @Override
-        boolean updateStatement(String query) {
+        boolean updateStatement(Object object) {
             return false;
         }
 
         @Override
-        boolean deleteStatement(String query) {
-            return this.executeStatement(query);
+        boolean deleteStatement(Object object) {
+            if (object instanceof Access) {
+                Access access = (Access) object;
+                StringBuilder query = new StringBuilder();
+                query.append("DELETE FROM Accesses WHERE UserID = ");
+                query.append(access.getUserID());
+
+                query.append(" AND Access = ");
+                retriever.appendStringParameterNullable(access.getAccess().name(), query);
+
+                query.append(" AND OrganisationID ");
+
+                String organisationID = access.getOrganisationID();
+                if (Objects.isNull(organisationID)) {
+                    query.append("IS ");
+                } else {
+                    query.append("= ");
+                }
+
+                retriever.appendStringParameterNullable(organisationID, query);
+
+                return this.executeStatement(query.toString());
+            }
+
+            System.out.println("ERROR: Bad Object.");
+            return false;
         }
     };
 
@@ -75,21 +96,19 @@ public class AccessDao implements IAccessDao {
     @Override
     public List<Access> getAllAccesses() {
         String query = "SELECT * FROM Accesses";
-
-        return retriever.retrieveStatement(query).stream().map(o -> (Access) o).collect(Collectors.toList());
+        return mapToAccess(retriever.retrieveStatement(query));
     }
 
     // Return the list of accesses for a given user ID
     @Override
     public List<Access> retrieveAccessByUserID(int userID) {
+        String query = "SELECT * FROM Accesses WHERE  UserID = " + userID;
 
-        String query = "SELECT * FROM Accesses WHERE  UserID = ?";
+        return mapToAccess(retriever.retrieveStatement(query));
+    }
 
-        return
-            retriever.retrievePreparedStatement(query, Collections.singletonList(userID))
-                .stream()
-                .map(o -> (Access) o)
-                .collect(Collectors.toList());
+    private List<Access> mapToAccess(List<Object> results) {
+        return results.stream().map(result -> (Access) result).collect(Collectors.toList());
     }
 
     @Override
@@ -104,14 +123,6 @@ public class AccessDao implements IAccessDao {
 
     @Override
     public boolean deleteAccess(Access access) {
-
-        String query =
-                "DELETE FROM Accesses WHERE UserID = "
-                        + access.getUserID()
-                        + " AND AccessType = \'"
-                        + access.getAccess().name()
-                        + "\'";
-
-        return retriever.deleteStatement(query);
+        return retriever.deleteStatement(access);
     }
 }
